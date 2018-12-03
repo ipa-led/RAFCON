@@ -16,6 +16,7 @@
 """
 
 import os
+import rospkg
 from os import listdir
 from os.path import expanduser, isfile, join
 import pkg_resources
@@ -25,6 +26,7 @@ share_folder_paths = [
     join(expanduser("~"), ".local", "share"),
     join(os.sep, 'usr', 'local', 'share'),
     join(os.sep, 'usr', 'share'),
+    join(os.sep, rospkg.RosPack().get_path("rafcon_ros"), "source"),
 ]
 
 # Check for non-default PYTHONUSERBASE and add it to the seach path list
@@ -114,7 +116,6 @@ def _search_in_share_folders(package_or_requirement, resource_name):
             lambda path: os.path.join(os.path.join(path, *package_or_requirement_segments), resource_name),
             share_folder_paths,
         )
-
         for path in paths:
             if os.path.isfile(path) or os.path.isdir(path):
                 return path

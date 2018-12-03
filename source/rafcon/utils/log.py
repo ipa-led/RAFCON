@@ -19,6 +19,7 @@
 """
 
 import os
+import rospkg
 import logging
 import logging.config
 import json
@@ -29,6 +30,7 @@ existing_loggers = {}
 
 # Root namespace
 rafcon_root = "rafcon"
+pkg_path = rospkg.RosPack().get_path("rafcon_ros")
 
 
 # Credits: https://stackoverflow.com/a/35804945
@@ -85,7 +87,9 @@ add_logging_level('VERBOSE', logging.DEBUG - 5)
 
 
 # Load config from RAFCON_LOGGING_CONF if available, otherwise the default logging.conf
-logging_conf_path = os.environ.get("RAFCON_LOGGING_CONF", resource_filename(rafcon_root, "logging.conf"))
+#logging_conf_path = os.environ.get("RAFCON_LOGGING_CONF", resource_filename(rafcon_root, "logging.conf"))
+default_path = os.path.join(pkg_path, "configuration/logging.conf")
+logging_conf_path = os.environ.get("RAFCON_LOGGING_CONF", default_path)
 with open(logging_conf_path) as logging_conf_file:
     try:
         logging_config = json.load(logging_conf_file)
@@ -109,6 +113,7 @@ def get_logger(name):
         return existing_loggers[name]
 
     # Ensure that all logger are within the RAFCON root namespace
+    print(name)
     namespace = name if name.startswith(rafcon_root + ".") else rafcon_root + "." + name
     logger = logging.getLogger(namespace)
     logger.propagate = True
